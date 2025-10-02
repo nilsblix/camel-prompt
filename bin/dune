@@ -1,0 +1,6 @@
+(executable
+ (name main)
+ (public_name main)
+ (libraries decorated)
+ (flags
+  (:standard -warn-error "-unused-constructor")))

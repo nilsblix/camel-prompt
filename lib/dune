@@ -1,0 +1,3 @@
+(library
+ (name decorated)
+ (modules decorated_string))
