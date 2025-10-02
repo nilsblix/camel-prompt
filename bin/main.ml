@@ -12,12 +12,12 @@ let contains_substring needle (haystack: string) =
     let n = String.length needle in
     let h = String.length haystack in
     if n = 0 then true else
-    let rec scan i =
-        if i + n > h then false
-        else if String.sub haystack i n = needle then true
-        else scan (i + 1)
-    in
-    scan 0
+        let rec scan i =
+            if i + n > h then false
+            else if String.sub haystack i n = needle then true
+            else scan (i + 1)
+        in
+        scan 0
 
 let cwd_label () =
     let cwd = Sys.getcwd () in
@@ -31,14 +31,14 @@ type nix_shell_type = | NotInNixShell | Pure | Impure | Unknown
 
 let detect_nix_shell () =
     match Sys.getenv_opt "IN_NIX_SHELL" with
-        | Some "pure" -> Pure
-        | Some "impure" -> Impure
-        | Some _ -> Unknown
-        | None -> match Sys.getenv_opt "PATH" with
-            | Some haystack ->
-                if contains_substring "/nix/store" haystack then Unknown
-                else NotInNixShell
-            | None -> NotInNixShell
+    | Some "pure" -> Pure
+    | Some "impure" -> Impure
+    | Some _ -> Unknown
+    | None -> match Sys.getenv_opt "PATH" with
+        | Some haystack ->
+            if contains_substring "/nix/store" haystack then Unknown
+            else NotInNixShell
+        | None -> NotInNixShell
 
 type git_repo_type = | NotInGitRepo | Branch of string
 
@@ -66,11 +66,11 @@ let resolve_git_dir work_root dotgit =
         | Ok content ->
             let content = String.trim content in
             (match remove_prefix "gitdir: " content with
-            | Some p ->
-                let p = String.trim p in
-                let resolved = if Filename.is_relative p then Filename.concat work_root p else p in
-                Some resolved
-            | None -> None)
+                | Some p ->
+                    let p = String.trim p in
+                    let resolved = if Filename.is_relative p then Filename.concat work_root p else p in
+                    Some resolved
+                | None -> None)
         | Error _ -> None
 
 let branch_name_of_head head_content =
@@ -78,8 +78,8 @@ let branch_name_of_head head_content =
     if String.starts_with ~prefix:"ref: " head then
         let refpath = String.sub head 5 (String.length head - 5) |> String.trim in
         match remove_prefix "refs/heads/" refpath with
-            | Some b -> b
-            | None -> (match remove_prefix "refs/" refpath with | Some b -> b | None -> refpath)
+        | Some b -> b
+        | None -> (match remove_prefix "refs/" refpath with | Some b -> b | None -> refpath)
     else
         let n = min 7 (String.length head) in
         "detached@" ^ String.sub head 0 n
@@ -89,12 +89,12 @@ let git_info () =
     | None -> NotInGitRepo
     | Some (work_root, dotgit) ->
         (match resolve_git_dir work_root dotgit with
-        | None -> NotInGitRepo
-        | Some gitdir ->
-            let head_path = Filename.concat gitdir "HEAD" in
-            (match read_file head_path with
-            | Ok s -> Branch (branch_name_of_head s)
-            | Error _ -> NotInGitRepo))
+            | None -> NotInGitRepo
+            | Some gitdir ->
+                let head_path = Filename.concat gitdir "HEAD" in
+                (match read_file head_path with
+                    | Ok s -> Branch (branch_name_of_head s)
+                    | Error _ -> NotInGitRepo))
 
 let string_of_git git = match git with
     | NotInGitRepo -> ""
@@ -118,15 +118,15 @@ let collect_segments xs esc =
         let sm = match seg.start_marker with
             | None -> ""
             | Some m -> decorate m |> colored seg.background
-                        |> append_to_ansi "" esc in
+                |> append_to_ansi "" esc in
         let text = seg.decorated_text |> append_to_ansi "" esc in
         let em = match seg.end_marker with
             | None -> ""
             | Some m ->
                 let base = decorate m |> colored seg.background in
                 (match next_bg_opt with
-                 | Some next_bg -> base |> background next_bg |> append_to_ansi "" esc
-                 | None -> base |> append_to_ansi "" esc) in
+                    | Some next_bg -> base |> background next_bg |> append_to_ansi "" esc
+                    | None -> base |> append_to_ansi "" esc) in
         acc ^ sm ^ text ^ em in
 
     let rec _collect acc xs = match xs with
@@ -169,8 +169,8 @@ let () =
     let git_segments = match git with
         | NotInGitRepo -> []
         | Branch _ -> [
-        let bg = Hex "0x4CAF50" in
-        let fg = Hex "0x1B394A" in {
+            let bg = Hex "0x4CAF50" in
+            let fg = Hex "0x1B394A" in {
                 decorated_text = decorate (" " ^ string_of_git git ^ " ")
                     |> background bg |> colored fg;
                 background = bg;
@@ -182,8 +182,8 @@ let () =
     let nix_segments = match nix with
         | NotInNixShell -> []
         | _ -> [
-        let bg = Hex "0x3986FF" in
-        let fg = Hex "0xFAFAFA" in {
+            let bg = Hex "0x3986FF" in
+            let fg = Hex "0xFAFAFA" in {
                 decorated_text = decorate (" \u{f1105}" ^ string_of_nix nix ^ " ")
                     |> background bg |> colored fg;
                 background = bg;
