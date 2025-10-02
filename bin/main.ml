@@ -24,7 +24,7 @@ let cwd_label () =
     let base = Filename.basename cwd in
     match Sys.getenv_opt "HOME" with
     | Some home when String.starts_with ~prefix:home cwd ->
-        if cwd = home then "~" else "~/" ^ base
+        if cwd = home then "~" else base
     | _ -> base
 
 type nix_shell_type = | NotInNixShell | Pure | Impure | Unknown
