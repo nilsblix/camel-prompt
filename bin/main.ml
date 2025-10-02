@@ -139,13 +139,22 @@ let collect_segments xs esc =
             _collect acc tail
     in _collect "" xs
 
-let () =
-    let esc = fun x -> x in
+let get_esc () =
+    let default = (fun x -> x) in
+    let shell_opt = Sys.getenv_opt "CAMEL_SHELL_TYPE" in
+    match shell_opt with
+    | None -> default
+    | Some s -> match s with
+        | "zsh"  -> (fun x -> "%{{" ^ x ^ "%}}")
+        | "bash" -> (fun x -> "\\[" ^ x ^ "\\]")
+        | _ -> default
 
+let () =
     let cwd = cwd_label () in
     let git = git_info () in
     let nix = detect_nix_shell () in
 
+    let esc = get_esc () in
     let base_segments = [
         let bg = Hex "0xFF469C" in
         let fg = Hex "0xFAFAFA" in {
