@@ -145,7 +145,7 @@ let get_esc () =
     match shell_opt with
     | None -> default
     | Some s -> match s with
-        | "zsh"  -> (fun x -> "%{{" ^ x ^ "%}}")
+        | "zsh"  -> (fun x -> "%{" ^ x ^ "%}")
         | "bash" -> (fun x -> "\\[" ^ x ^ "\\]")
         | _ -> default
 
