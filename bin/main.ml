@@ -195,4 +195,4 @@ let () =
     let segments = base_segments @ git_segments @ nix_segments in
 
     let ret = collect_segments segments esc in
-    print_string ("\n" ^ ret ^ " ");;
+    print_string (ret ^ " ");;
